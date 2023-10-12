@@ -4,11 +4,16 @@ FINAL UZDEVUMS
 ## Github projekta izveidošanā
 1 p 
 
-- [ ] Izveidot koplietošanas repozitoriju. 
+- [ ] Izveidot koplietošanas repozitoriju.
+    Izveidots jauns koplietošanas repozitorijs
 - [ ] Pievienot **.gitignore** failu, lai ignorētu nevēlamus failus (piem., Terraform stāvokļa failus, slepenos atslēgu failus utt.).
-- [ ] Pievienot lietotājus. 
+      Pievienots .gitignore fails
+- [ ] Pievienot lietotājus.
+      Pievienoti visi 4 lietotāji
 - [ ] Sadalīt lomas.
+      Sadalītas lomas
 - [ ] Sadalīt uzdevumus.
+      Sadalīti uzdevumi starp komandu.
 - [ ] Pievienot **README** failu ar projekta aprakstu un pamatinstrukcijām.
 
 
