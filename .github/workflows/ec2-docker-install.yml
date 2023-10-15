@@ -1,0 +1,41 @@
+name: Install Docker on Dynamic EC2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-docker:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+
+    - name: Fetch EC2 IP/DNS based on tag
+      id: fetch-ec2
+      run: |
+        INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Production,Values=production-tag" --query "Reservations[0].Instances[0].InstanceId" --output text)
+        HOSTNAME=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query "Reservations[0].Instances[0].PublicDnsName" --output text)
+        echo "::set-output name=hostname::$HOSTNAME"
+
+    - name: Install Docker on EC2
+      env:
+        EC2_SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        EC2_HOSTNAME: ${{ steps.fetch-ec2.outputs.hostname }}
+      run: |
+        ssh-keyscan $EC2_HOSTNAME >> ~/.ssh/known_hosts
+        echo "$EC2_SSH_KEY" > ec2_key.pem
+        chmod 600 ec2_key.pem
+
+        ssh -i ec2_key.pem ec2-user@$EC2_HOSTNAME << EOF
+          sudo yum update -y
+          sudo yum install -y docker
+          sudo service docker start
+          sudo usermod -a -G docker ec2-user
+        EOF
