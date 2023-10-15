@@ -23,6 +23,6 @@ jobs:
       run: |
         echo "${{ secrets.AWS_SECRET_ACCESS_KEY }}" > temporary_key.pem
         chmod 600 temporary_key.pem
-        ssh -t -t -i temporary_key.pem -o StrictHostKeyChecking=no ubuntu@54.201.114.163<<EOF
+        ssh -i temporary_key.pem -o StrictHostKeyChecking=no ubuntu@54.201.114.163<<EOF
         aws s3api create-bucket --bucket Final-project-S3-bucket --region us-west-2a
         EOF
