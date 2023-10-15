@@ -1,4 +1,4 @@
-name: 
+name: Create S3 Bucket
 run-name: ${{ github.actor }} creating S3 bucket
 on:
   push:
@@ -20,9 +20,9 @@ jobs:
         aws-region: us-west-2
       
     - name: Create S3 Bucket using AWS CLI on EC2
-      run:
+      run: |
         echo "${{ secrets.AWS_SECRET_ACCESS_KEY }}" > temporary_key.pem
         chmod 600 temporary_key.pem
-        ssh -i temporary_key.pem -o StrictHostKeyChecking=no ubuntu@54.201.114.163<<-EOF
+        ssh -i temporary_key.pem -o StrictHostKeyChecking=no ubuntu@54.201.114.163<<EOF
         aws s3api create-bucket --bucket Final-project-S3-bucket --region us-west-2a
         EOF
