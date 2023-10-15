@@ -21,6 +21,6 @@ jobs:
       
     - name: Create S3 Bucket using AWS CLI on EC2
       run: |
-        ssh -o StrictHostKeyChecking=no ec2-user@172.31.20.253 << EOF
+        ssh -o StrictHostKeyChecking=no ubuntu@172.31.20.253 << EOF
         aws s3api create-bucket --bucket Final-project-S3-bucket --region us-west-2
         EOF
