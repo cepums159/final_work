@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@main
       - run: |
-          aws s3 mb s3://Final-project-S3-bucket
+          aws s3 mb s3://final-project-bucket
 
         env:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
