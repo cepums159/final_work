@@ -24,10 +24,10 @@ jobs:
       run: |
         echo -n "${{ secrets.FINAL_WORK_KEY }}" > temporary_key.pem
         chmod 600 temporary_key.pem
-        scp -o StrictHostKeyChecking=no -i temporary_key.pem temporary_key.pem ubuntu@54.201.114.163:
+       # scp -o StrictHostKeyChecking=no -i temporary_key.pem temporary_key.pem ubuntu@54.201.114.163:
 
     - name: Create S3 Bucket using AWS CLI on EC2
       run: |
         ssh -i temporary_key.pem -o StrictHostKeyChecking=no ubuntu@54.201.114.163 << EOF
-           aws s3api create-bucket --bucket Final-project-S3-bucket --region us-west-2a  # Update with your desired S3 bucket name and region
+           aws s3api create-bucket --bucket Final-project-S3-bucket --region us-west-2  # Update with your desired S3 bucket name and region
         EOF
