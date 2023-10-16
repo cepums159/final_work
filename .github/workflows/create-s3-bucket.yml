@@ -1,33 +1,50 @@
-name: Create S3 Bucket
+name: 
+#To know who to blame for all the problems -->
 run-name: ${{ github.actor }} creating S3 bucket
 on:
   push:
+    #TODO: For testing leave on push and later switch to merge into main
     branches:
       - main
-      - bucket
 jobs:
-  create_bucket:
+  S3:
+    name: Deploy
     runs-on: ubuntu-latest
+    environment:
+      name: Development
+      
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
 
-    - name: Set up AWS CLI
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-west-2 
+        uses: actions/checkout@main
+        #TODO: Make name creation more "dinamic" (without spamming 100k new buckets)
+        #aws s3 mb s3://final-test-project  -for bucket creating
+        #aws s3 ls s3://final-test-project  -for listing bucket contents
+      - run: |
+          aws s3 ls s3://final-test-project 
 
-    - name: Copy private key to EC2 instance
-      run: |
-        echo -n "${{ secrets.FINAL_WORK_KEY }}" > temporary_key.pem
-        chmod 600 temporary_key.pem
-       # scp -o StrictHostKeyChecking=no -i temporary_key.pem temporary_key.pem ubuntu@54.201.114.163:
+        env: #env setup
+          #Access key stored as GitHub repo secret
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          #Secret access key stored as GitHub repo secret
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          #Desired region for deployment
+          AWS_DEFAULT_REGION: 'us-west-2'
 
-    - name: Create S3 Bucket using AWS CLI on EC2
-      run: |
-        ssh -i temporary_key.pem -o StrictHostKeyChecking=no ubuntu@54.201.114.163 -p 22 << EOF
-           aws s3api create-bucket --bucket Final-project-S3-bucket --region us-west-2a  # Update with your desired S3 bucket name and region
-        EOF
+      - name: Docker deploy in EC2
+        env:
+          AWS_PRIVATE_KEY: ${{ secrets.FINAL_WORK_KEY }}
+        #docker Linux install by using apt-get: https://docs.docker.com/engine/install/ubuntu/
+        run: | # can make this dinamic, but for science purpuses we made it simple like this:
+          echo "$AWS_PRIVATE_KEY" > aws_private_key && chmod 600 aws_private_key
+          ssh -o StrictHostKeyChecking=no -i aws_private_key ubuntu@54.201.114.163 "
+            sudo apt-get update &&
+            sudo apt-get install -y ca-certificates curl gnupg &&
+            sudo install -m 0755 -d /etc/apt/keyrings &&
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --keyserver --dearmor -o /etc/apt/keyrings/docker.gpg &&
+            sudo chmod a+r /etc/apt/keyrings/docker.gpg &&
+            echo 'deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null &&
+            sudo apt-get update &&
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+            "
