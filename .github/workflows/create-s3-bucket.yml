@@ -37,8 +37,8 @@ jobs:
           AWS_PRIVATE_KEY: ${{ secrets.FINAL_WORK_KEY }}
         #docker Linux install by using apt-get: https://docs.docker.com/engine/install/ubuntu/
         run: | # can make this dinamic, but for science purpuses we made it simple like this:
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@54.201.114.163 "
+          echo "$AWS_PRIVATE_KEY" > aws_private_key && chmod 600 aws_private_key
+          ssh -o StrictHostKeyChecking=no -i aws_private_key ubuntu@54.201.114.163 "
           sudo apt-get update&
           sudo apt-get install ca-certificates curl gnupg&
           sudo install -m 0755 -d /etc/apt/keyrings&
