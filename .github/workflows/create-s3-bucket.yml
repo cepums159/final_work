@@ -28,6 +28,6 @@ jobs:
 
     - name: Create S3 Bucket using AWS CLI on EC2
       run: |
-        ssh -i temporary_key.pem -o StrictHostKeyChecking=no ubuntu@54.201.114.163 << EOF
-           aws s3api create-bucket --bucket Final-project-S3-bucket --region us-west-2  # Update with your desired S3 bucket name and region
+        ssh -i temporary_key.pem -o StrictHostKeyChecking=no ubuntu@54.201.114.163 -p 22 << EOF
+           aws s3api create-bucket --bucket Final-project-S3-bucket --region us-west-2a  # Update with your desired S3 bucket name and region
         EOF
