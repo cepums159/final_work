@@ -3,14 +3,18 @@ run-name: ${{ github.actor }} creating S3 bucket
 on:
   push:
     branches:
-      - main
+      - 111
 jobs:
-  create_bucket:
+  S3:
+    name: Deploy
     runs-on: ubuntu-latest
+    environment:
+      name: Development
+      
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@main
 
     - name: Set up AWS CLI
       uses: aws-actions/configure-aws-credentials@v1
@@ -21,8 +25,24 @@ jobs:
       
     - name: Create S3 Bucket using AWS CLI on EC2
       run:
-        echo "${{ secrets.AWS_SECRET_ACCESS_KEY }}" > temporary_key.pem
-        chmod 600 temporary_key.pem
-        ssh -i temporary_key.pem -o StrictHostKeyChecking=no ubuntu@54.201.114.163  << EOF
-        aws s3api create-bucket --bucket Final-project-S3-bucket --region us-west-2a
+        echo "$PRIVATE_KEY" > temp_private_key && chmod 600 temp_private_key
+        # can make this dinamic, but for science purpuse we made it simple like this:
+        ssh -i temp_private_key -o StrictHostKeyChecking=no ubuntu@54.201.114.163  << EOF
+        aws s3 create-bucket --bucket Final-project-S3-bucket --region us-west-2a
         EOF
+
+    - name: Deploy in EC2 (Install Docker)
+        env:
+          aws-private-key: ${{ secrets.AWS_PRIVATE_KEY  }}
+                 
+        run: |
+           echo "$AWS-PRIVATE-KEY" > private_key && chmod 600 private_key
+           ssh -o StrictHostKeyChecking=no -i private_key ubuntu@54.201.114.163 "
+            sudo apt-get update&
+           sudo apt-get install ca-certificates curl gnupg&
+           sudo install -m 0755 -d /etc/apt/keyrings&
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg&
+            sudo chmod a+r /etc/apt/keyrings/docker.gpg&
+           sudo tee /etc/apt/sources.list.d/docker.list > /dev/null &
+            sudo apt-get update&
+            sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
