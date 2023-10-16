@@ -5,7 +5,7 @@ on:
   push:
     #TODO: For testing leave on push and later switch to merge into main
     branches:
-      - 111
+      - main
 jobs:
   S3:
     name: Deploy
