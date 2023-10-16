@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@main
-        run: |
+      - run: |
           aws s3 mb s3://Final-project-S3-bucket
 
         env:
