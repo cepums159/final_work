@@ -13,15 +13,15 @@ jobs:
       
 
     steps:
-      - name: Checkout code (aws s3 mb s3://final-project-bucket)
+      - name: Checkout code
         uses: actions/checkout@main
       - run: |
-          aws s3 ls s3://final-project-bucket
+          aws s3 mb s3://final-project-bucket
 
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_PRIVATE_KEY: ${{ secrets.FINAL_WORK_KEY  }}
+          AWS_PRIVATE_KEY: ${{ secrets.FINAL_WORK_KEY }}
           AWS_DEFAULT_REGION: 'us-west-2'
 
     # - name: Set up AWS CLI
